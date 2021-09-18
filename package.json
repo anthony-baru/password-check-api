@@ -6,7 +6,11 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon server",
-    "start": "node server.js"
+    "start": "node server.js",
+    "password_validator":"node ./bin/password_validator.js"
+  },
+  "bin": {
+    "password_validator": "./bin/password_validator.js"
   },
   "keywords": [],
   "author": "",
