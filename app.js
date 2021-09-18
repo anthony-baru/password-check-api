@@ -1,15 +1,9 @@
 const express = require("express");
-
 const rateLimit = require("express-rate-limit");
 const helmet = require("helmet");
-const path = require("path");
-
 const cors = require("cors");
-
 const app = express();
-app.enable("trust proxy");
-app.use(helmet());
-
+const fs = require("fs");
 const limiter = rateLimit({
   max: 1000,
   windowMs: 60 * 60 * 1000, //100 requests per hour
@@ -17,6 +11,10 @@ const limiter = rateLimit({
   headers: true,
   draft_polli_ratelimit_headers: true,
 });
+const rulesFile = fs.readFileSync("password.rules.json");
+
+app.enable("trust proxy");
+app.use(helmet());
 app.use("/api", limiter);
 app.use(express.json({ limit: "10kb" }));
 
@@ -24,8 +22,6 @@ app.use(cors());
 
 app.use(express.urlencoded({ extended: true }));
 
-const fs = require("fs");
-const rulesFile = fs.readFileSync("password.rules.json");
 let rules = JSON.parse(rulesFile).rules;
 
 app.post("/passwords", (req, res) => {
@@ -35,8 +31,8 @@ app.post("/passwords", (req, res) => {
   let status;
 
   rules.forEach((el, i) => {
-    var regex = new RegExp(el.regex);
-    var rex = regex.test(password);
+    const regex = new RegExp(el.regex);
+    const rex = regex.test(password);
 
     if (!rex && el.name != "repeating_char") {
       errors.push(el.message);
